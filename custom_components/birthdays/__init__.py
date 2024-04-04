@@ -82,7 +82,7 @@ class BirthdayEntity(Entity):
         self.hass = hass
 
         self._extra_state_attributes = {
-            CONF_DATE_OF_BIRTH: str(self.date_of_birth),
+            CONF_DATE_OF_BIRTH: str(self._date_of_birth),
             CONF_IS_LUNAR: str(self._is_lunar),
         }
 
