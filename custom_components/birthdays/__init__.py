@@ -44,7 +44,7 @@ async def async_setup(hass, config):
         unique_id = birthday_data.get(CONF_UNIQUE_ID)
         name = birthday_data[CONF_NAME]
         date_of_birth = birthday_data[CONF_DATE_OF_BIRTH]
-        is_lunar = birthday_data[CONF_IS_LUNAR]
+        is_lunar = birthday_data.get[CONF_IS_LUNAR]
         icon = birthday_data[CONF_ICON]
         attributes = birthday_data[CONF_ATTRIBUTES]
         devices.append(BirthdayEntity(unique_id, name, date_of_birth, is_lunar, icon, attributes, hass))
@@ -76,13 +76,14 @@ class BirthdayEntity(Entity):
         self._state = None
         self._icon = icon
         if self._is_lunar:
-            self._date_of_birth = ZhDate(date_of_birth.year, date_of_birth._date_of_birth.month, date_of_birth._date_of_birth.day).to_datetime()
+            self._date_of_birth = ZhDate(date_of_birth.year, date_of_birth.month, date_of_birth.day).to_datetime()
         else:
             self._date_of_birth = date_of_birth
         self.hass = hass
 
         self._extra_state_attributes = {
-            CONF_DATE_OF_BIRTH: str(self._date_of_birth),
+            CONF_DATE_OF_BIRTH: str(self.date_of_birth),
+            CONF_IS_LUNAR: str(self._is_lunar),
         }
 
         if len(attributes) > 0 and attributes is not None:
