@@ -76,7 +76,7 @@ class BirthdayEntity(Entity):
         self._state = None
         self._icon = icon
         if self._is_lunar:
-            self._date_of_birth = ZhDate(today.year, self._date_of_birth.month, self._date_of_birth.day).to_datetime()
+            self._date_of_birth = ZhDate(date_of_birth.year, date_of_birth._date_of_birth.month, date_of_birth._date_of_birth.day).to_datetime()
         else:
             self._date_of_birth = date_of_birth
         self.hass = hass
