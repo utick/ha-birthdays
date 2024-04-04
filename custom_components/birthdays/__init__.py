@@ -44,7 +44,7 @@ async def async_setup(hass, config):
         unique_id = birthday_data.get(CONF_UNIQUE_ID)
         name = birthday_data[CONF_NAME]
         date_of_birth = birthday_data[CONF_DATE_OF_BIRTH]
-        is_lunar = birthday_data.get[CONF_IS_LUNAR]
+        is_lunar = birthday_data.get(CONF_IS_LUNAR)
         icon = birthday_data[CONF_ICON]
         attributes = birthday_data[CONF_ATTRIBUTES]
         devices.append(BirthdayEntity(unique_id, name, date_of_birth, is_lunar, icon, attributes, hass))
