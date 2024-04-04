@@ -10,12 +10,14 @@ from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.event import async_call_later
 from homeassistant.util import dt as dt_util
 from homeassistant.util import slugify
+from zhdate import ZhDate
 
 _LOGGER = logging.getLogger(__name__)
 
 CONF_UNIQUE_ID = 'unique_id'
 CONF_NAME = 'name'
 CONF_DATE_OF_BIRTH = 'date_of_birth'
+CONF_IS_LUNAR='is_lunar'
 CONF_ICON = 'icon'
 CONF_ATTRIBUTES = 'attributes'
 CONF_AGE_AT_NEXT_BIRTHDAY = 'age_at_next_birthday'
@@ -25,6 +27,7 @@ BIRTHDAY_CONFIG_SCHEMA = vol.Schema({
     vol.Optional(CONF_UNIQUE_ID): cv.string,
     vol.Required(CONF_NAME) : cv.string,
     vol.Required(CONF_DATE_OF_BIRTH) : cv.date,
+    vol.Optional(CONF_IS_LUNAR): cv.boolean,
     vol.Optional(CONF_ICON, default = 'mdi:cake'): cv.string,
     vol.Optional(CONF_ATTRIBUTES, default = {}) : vol.Schema({cv.string: cv.string}),
 })
@@ -41,9 +44,10 @@ async def async_setup(hass, config):
         unique_id = birthday_data.get(CONF_UNIQUE_ID)
         name = birthday_data[CONF_NAME]
         date_of_birth = birthday_data[CONF_DATE_OF_BIRTH]
+        is_lunar = birthday_data[CONF_IS_LUNAR]
         icon = birthday_data[CONF_ICON]
         attributes = birthday_data[CONF_ATTRIBUTES]
-        devices.append(BirthdayEntity(unique_id, name, date_of_birth, icon, attributes, hass))
+        devices.append(BirthdayEntity(unique_id, name, date_of_birth, is_lunar, icon, attributes, hass))
 
     component = EntityComponent(_LOGGER, DOMAIN, hass)
     await component.async_add_entities(devices)
@@ -59,17 +63,22 @@ async def async_setup(hass, config):
 
 class BirthdayEntity(Entity):
 
-    def __init__(self, unique_id, name, date_of_birth, icon, attributes, hass):
+    def __init__(self, unique_id, name, date_of_birth, is_lunar, icon, attributes, hass):
         self._name = name
 
         if unique_id is not None:
             self._unique_id = slugify(unique_id)
         else: 
             self._unique_id = slugify(name)
+        
+        self._is_lunar = is_lunar if is_lunar is not None else False
 
         self._state = None
         self._icon = icon
-        self._date_of_birth = date_of_birth
+        if self._is_lunar:
+            self._date_of_birth = ZhDate(today.year, self._date_of_birth.month, self._date_of_birth.day).to_datetime()
+        else:
+            self._date_of_birth = date_of_birth
         self.hass = hass
 
         self._extra_state_attributes = {
